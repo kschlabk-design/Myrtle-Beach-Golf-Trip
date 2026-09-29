@@ -1,0 +1,13 @@
+import { createRequire } from 'node:module';
+const { chromium } = createRequire(process.env.PW_ROOT + '/')('playwright');
+const OUT = process.env.OUT;
+const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+await p.goto('http://127.0.0.1:4321'); await p.waitForTimeout(500);
+await p.click('.me-btn'); await p.click('.chip:has-text("Kyle Schlabach")');
+await p.screenshot({ path: OUT + '/t26-today.png', fullPage: true });
+await p.click('.day-chip >> nth=4'); await p.screenshot({ path: OUT + '/t26-day5.png', fullPage: true });
+await p.click('.tab[data-t="players"]'); await p.screenshot({ path: OUT + '/t26-players.png' });
+await p.click('.scorer-link').catch(async () => { await p.evaluate(() => window.scrollTo(0, 99999)); await p.click('.scorer-link'); });
+for (const d of '12345') await p.click(`[data-a="pinkey"][data-v="${d}"]`); await p.click('[data-a="pingo"]'); await p.waitForTimeout(400);
+await p.click('.day-chip >> nth=0'); await p.screenshot({ path: OUT + '/t26-scorer.png' });
+await b.close();
